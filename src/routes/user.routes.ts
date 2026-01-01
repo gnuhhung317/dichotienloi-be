@@ -22,4 +22,13 @@ router.delete(
   UserController.deleteUser
 );
 
+/** POST /users/group
+ * Tạo nhóm người dùng mới (bắt buộc token)
+ */
+router.post(
+  "/group",
+  authMiddleware,
+  UserController.createGroup
+);
+
 export default router;
