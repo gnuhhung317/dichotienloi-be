@@ -47,4 +47,65 @@ export class UserController {
       }
     }
   }
+
+  // POST /users/group/add
+  static async addUserToGroup(req: any, res: Response) {
+    try {
+      const ownerId = req.user.userId;
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
+      }
+
+      const member = await GroupService.addUserToGroup(ownerId, userId);
+
+      res.status(201).json(member);
+    } catch (err: any) {
+      switch (err.message) {
+        case "REQUESTER_NOT_IN_GROUP":
+          return res.status(403).json({ message: "Requester is not in the group" });
+
+        case "USER_NOT_FOUND":
+          return res.status(404).json({ message: "User not found" });
+
+        case "USER_ALREADY_IN_GROUP":
+          return res.status(409).json({ message: "User already belongs to a group" });
+
+        default:
+          return res.status(500).json({ message: "Server error" });
+      }
+    }
+  }
+
+  // DELETE /users/group
+  static async deleteGroupMember(req: any, res: Response) {
+    try {
+      const requesterId = req.user.userId;
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
+      }
+
+      await GroupService.deleteGroupMember(requesterId, userId);
+
+      res.json({ message: "Member removed from group" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // GET /users/group
+  static async getMyGroup(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+
+      const members = await GroupService.getMyGroupMembers(userId);
+
+      res.json(members);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
 }

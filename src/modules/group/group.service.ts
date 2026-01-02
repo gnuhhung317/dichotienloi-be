@@ -1,5 +1,6 @@
 import { GroupModel } from "../../models/Group";
 import { GroupMemberModel } from "../../models/GroupMember"
+import { UserModel } from "../../models/User";
 
 export class GroupService {
   static async createGroup(userId: string, name: string) {
@@ -25,5 +26,79 @@ export class GroupService {
     });
 
     return group;
+  }
+
+  static async addUserToGroup(requesterId: string, targetUserId: string) {
+    const requesterMembership = await GroupMemberModel.findOne({
+      userId: requesterId
+    });
+
+    if (!requesterMembership) {
+      throw new Error("REQUESTER_NOT_IN_GROUP");
+    }
+
+    const user = await UserModel.findById(targetUserId);
+    if (!user) {
+      throw new Error("USER_NOT_FOUND");
+    }
+
+    const existingMembership = await GroupMemberModel.findOne({ userId: targetUserId });
+    if (existingMembership) {
+      throw new Error("USER_ALREADY_IN_GROUP");
+    }
+
+    const member = await GroupMemberModel.create({
+      groupId: requesterMembership.groupId,
+      userId: targetUserId,
+      role: "member"
+    });
+
+    return member;
+  }
+
+  static async deleteGroupMember(requesterId: string, targetUserId: string) {
+    const requesterMembership = await GroupMemberModel.findOne({
+      userId: requesterId
+    });
+
+    if (!requesterMembership) {
+      throw new Error("REQUESTER_NOT_IN_GROUP");
+    }
+
+    if (requesterMembership.role !== "owner") {
+      throw new Error("ONLY_OWNER_CAN_DELETE_MEMBER");
+    }
+
+    if (requesterId === targetUserId) {
+      throw new Error("OWNER_CANNOT_REMOVE_SELF");
+    }
+
+    const targetMembership = await GroupMemberModel.findOne({
+      userId: targetUserId,
+      groupId: requesterMembership.groupId
+    });
+
+    if (!targetMembership) {
+      throw new Error("USER_NOT_IN_SAME_GROUP");
+    }
+
+    await GroupMemberModel.deleteOne({
+      userId: targetUserId,
+      groupId: requesterMembership.groupId
+    });
+  }
+
+  static async getMyGroupMembers(userId: string) {
+    const membership = await GroupMemberModel.findOne({ userId });
+
+    if (!membership) {
+      throw new Error("USER_NOT_IN_GROUP");
+    }
+
+    const members = await GroupMemberModel.find({
+      groupId: membership.groupId
+    }).sort({ joined_at: 1 });
+
+    return members;
   }
 }
