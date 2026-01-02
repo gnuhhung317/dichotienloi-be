@@ -12,30 +12,12 @@ const categorySchema = new Schema(
       type: String,
       required: true,
       trim: true
-    },
-
-    scope: {
-      type: String,
-      enum: ['global', 'group'],
-      required: true
-    },
-
-    groupId: {
-      type: String,
-      ref: 'Group',
-      default: null
     }
+
   },
   {
     _id: false
   }
-);
-
-categorySchema.index({ scope: 1 });
-categorySchema.index({ groupId: 1 });
-categorySchema.index(
-  { name: 1, scope: 1, groupId: 1 },
-  { unique: true }
 );
 
 export const CategoryModel =

@@ -12,18 +12,6 @@ const unitSchema = new Schema(
       type: String,
       required: true,
       trim: true
-    },
-
-    scope: {
-      type: String,
-      enum: ['global', 'group'],
-      required: true
-    },
-
-    groupId: {
-      type: String,
-      ref: 'Group',
-      default: null
     }
   },
   {
