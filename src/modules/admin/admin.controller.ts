@@ -18,6 +18,15 @@ export class AdminController {
     }
   }
 
+  static async getCategory(req: Request, res: Response) {
+    try {
+      const categories = await AdminService.getCategory();
+      res.json(categories);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async editCategory(req: Request, res: Response) {
     try {
       const { oldName, newName } = req.body;
@@ -60,6 +69,15 @@ export class AdminController {
 
       const unit = await AdminService.createUnit(unitName);
       res.status(201).json(unit);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  static async getUnit(req: Request, res: Response) {
+    try {
+      const units = await AdminService.getUnit();
+      res.json(units);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

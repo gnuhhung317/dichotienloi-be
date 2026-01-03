@@ -20,6 +20,10 @@ export class AdminService {
     return category;
   }
 
+  static async getCategory() {
+    return CategoryModel.find().sort({ name: 1 });
+  }
+
   static async editCategory(oldName: string, newName: string) {
     const oldTrimmed = oldName.trim();
     const newTrimmed = newName.trim();
@@ -81,6 +85,10 @@ export class AdminService {
     });
 
     return unit;
+  }
+
+  static async getUnit() {
+    return UnitModel.find().sort({ name: 1 });
   }
 
   static async editUnit(oldName: string, newName: string) {

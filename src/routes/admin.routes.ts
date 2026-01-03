@@ -7,12 +7,14 @@ const router = Router();
 
 router.use(authMiddleware, requireRole(["admin"]));
 
-router.post("/categories", AdminController.createCategory);
-router.put("/categories", AdminController.editCategory);
-router.delete("/categories", AdminController.deleteCategory);
+router.post("/category", AdminController.createCategory);
+router.get("/category", AdminController.getCategory);
+router.put("/category", AdminController.editCategory);
+router.delete("/category", AdminController.deleteCategory);
 
-router.post("/units", AdminController.createUnit);
-router.put("/units", AdminController.editUnit);
-router.delete("/units", AdminController.deleteUnit);
+router.post("/unit", AdminController.createUnit);
+router.get("/unit", AdminController.getUnit);
+router.put("/unit", AdminController.editUnit);
+router.delete("/unit", AdminController.deleteUnit);
 
 export default router;
