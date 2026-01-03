@@ -4,6 +4,7 @@ import userRoutes from "./user.routes";
 import adminRoutes from "./admin.routes";
 import foodRoutes from "./food.routes";
 import fridgeRoutes from "./fridge.routes";
+import recipeRoutes from "./recipe.routes";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use("/user", userRoutes);
 router.use("/admin", adminRoutes);
 router.use("/food", foodRoutes);
 router.use("/fridge", fridgeRoutes);
+router.use("/recipe", recipeRoutes);
 
 export default router;

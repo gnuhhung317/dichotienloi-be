@@ -1,3 +1,4 @@
+import { group } from 'console';
 import mongoose, { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,7 +22,7 @@ const recipeSchema = new Schema(
 
     ownerType: {
       type: String,
-      enum: ['user', 'group', 'global'],
+      enum: ['group', 'global'],
       required: true
     },
 
@@ -29,7 +30,21 @@ const recipeSchema = new Schema(
       type: String,
       ref: 'User',
       default: null
-    }
+    },
+
+    groupId: {
+      type: String,
+      ref: 'Group',
+      default: null
+    },
+    
+    ingredients: [
+      {
+        foodId: { type: String, ref: 'Food', required: true },
+        quantity: { type: Schema.Types.Decimal128, required: true },
+        unitId: { type: String, ref: 'Unit', required: true }
+      }
+    ]
   },
   {
     timestamps: {
