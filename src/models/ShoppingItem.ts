@@ -8,9 +8,9 @@ const shoppingItemSchema = new Schema(
       default: uuidv4
     },
 
-    shoppingListId: {
+    groupId: {
       type: String,
-      ref: 'ShoppingList',
+      ref: 'Group',
       required: true
     },
 
@@ -41,7 +41,7 @@ const shoppingItemSchema = new Schema(
   }
 );
 
-shoppingItemSchema.index({ shoppingListId: 1 });
+shoppingItemSchema.index({ groupId: 1 });
 shoppingItemSchema.index({ assignedTo: 1 });
 shoppingItemSchema.index({ is_bought: 1 });
 
