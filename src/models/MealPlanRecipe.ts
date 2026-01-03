@@ -1,22 +1,34 @@
+import { group } from 'console';
 import mongoose, { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
-const mealPlanRecipeSchema = new Schema(
+const mealRecipeSchema = new Schema(
   {
     _id: {
       type: String,
       default: uuidv4
     },
 
-    mealPlanId: {
+    groupId: {
       type: String,
-      ref: 'MealPlan',
+      ref: 'Group',
       required: true
     },
 
     recipeId: {
       type: String,
       ref: 'Recipe',
+      required: true
+    },
+
+    date: {
+      type: Date,
+      required: true
+    },
+
+    mealType: {
+      type: String,
+      enum: ['breakfast', 'lunch', 'dinner'],
       required: true
     }
   },
@@ -25,12 +37,14 @@ const mealPlanRecipeSchema = new Schema(
   }
 );
 
-mealPlanRecipeSchema.index({ mealPlanId: 1 });
-mealPlanRecipeSchema.index({ recipeId: 1 });
-mealPlanRecipeSchema.index(
-  { mealPlanId: 1, recipeId: 1 },
+mealRecipeSchema.index({ date: 1 });
+
+mealRecipeSchema.index({ date: 1, mealType: 1 });
+
+mealRecipeSchema.index(
+  { recipeId: 1, date: 1, mealType: 1 },
   { unique: true }
 );
 
-export const MealPlanRecipeModel =
-  mongoose.models.MealPlanRecipe || mongoose.model('MealPlanRecipe', mealPlanRecipeSchema);
+export const MealRecipeModel =
+  mongoose.models.MealRecipe ||mongoose.model('MealRecipe', mealRecipeSchema);
