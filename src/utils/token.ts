@@ -5,3 +5,8 @@ export const signAccessToken = (payload: object) =>
   jwt.sign(payload, jwtConfig.accessSecret, {
     expiresIn: jwtConfig.accessExpiresIn
   });
+
+  export const signRefreshToken = (payload: object) =>
+  jwt.sign(payload, jwtConfig.refreshSecret, {
+    expiresIn: jwtConfig.refreshExpiresIn
+  });

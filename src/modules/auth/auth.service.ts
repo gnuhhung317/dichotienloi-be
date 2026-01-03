@@ -1,6 +1,9 @@
 import { UserModel } from "../../models/User";
 import { hashPassword, comparePassword } from "../../utils/password";
-import { signAccessToken } from "../../utils/token";
+import { signAccessToken, signRefreshToken } from "../../utils/token";
+import { RefreshTokenModel } from "../../models/RefreshToken";
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../../config/jwt";
 
 export class AuthService {
   static async register(email: string, password: string, name: string) {
@@ -16,20 +19,28 @@ export class AuthService {
     return user;
   }
 
-  static async login(email: string, password: string) {
+  static async login(email: string, password: string, device?: string) {
     const user = await UserModel.findOne({ email });
     if (!user) throw new Error("Invalid credentials");
 
     const ok = await comparePassword(password, user.passwordHash);
     if (!ok) throw new Error("Invalid credentials");
 
-    const token = signAccessToken({
+    const payload = { userId: user._id, role: user.role };
+    const accessToken = signAccessToken(payload);
+    const refreshToken = signRefreshToken(payload);
+
+    await RefreshTokenModel.create({
       userId: user._id,
-      role: user.role
+      role: user.role,
+      token: refreshToken,
+      device,
+      expiresAt: new Date(Date.now() + jwtConfig.refreshExpiresIn * 1000) // 7 days
     });
 
     return {
-      accessToken: token,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -37,5 +48,31 @@ export class AuthService {
         role: user.role
       }
     };
+  }
+
+  static async logout(refreshToken: string) {
+    await RefreshTokenModel.deleteOne({ token: refreshToken });
+  }
+
+  static async refresh(refreshToken: string) {
+    const payload = jwt.verify(
+      refreshToken,
+      jwtConfig.refreshSecret
+    ) as any;
+
+    const stored = await RefreshTokenModel.findOne({
+      token: refreshToken,
+      userId: payload.userId,
+      expiresAt: { $gt: new Date() }
+    });
+
+    if (!stored) throw new Error("Refresh token revoked or expired");
+
+    const newAccessToken = signAccessToken({
+      userId: payload.userId,
+      role: payload.role
+    });
+
+    return { accessToken: newAccessToken };
   }
 }

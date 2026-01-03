@@ -36,8 +36,19 @@ export class AuthController {
     }
   }
 
+  static async refresh(req: Request, res: Response) {
+    try {
+      const { refreshToken } = req.body;
+      const result = await AuthService.refresh(refreshToken);
+      res.json(result);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async logout(req: Request, res: Response) {
     try {
+      await AuthService.logout(req.body.refreshToken);
       res.json({ message: "Logout successful" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
