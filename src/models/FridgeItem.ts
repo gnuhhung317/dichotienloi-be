@@ -39,12 +39,13 @@ const fridgeItemSchema = new Schema(
     storagePlace: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      default: 'fridge'
     },
 
     status: {
       type: String,
-      enum: ['available', 'consumed', 'expired', 'discarded'],
+      enum: ['available', 'expired'],
       required: true
     }
   },

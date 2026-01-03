@@ -7,5 +7,10 @@ const router = Router();
 router.use(authMiddleware);
 
 router.post("/", FoodController.createFood);
+router.get("/", FoodController.getFoodInGroup);
+router.put("/", FoodController.editFood);
+router.delete("/", FoodController.deleteFood);
+router.get("/category", FoodController.getAllCategories);
+router.get("/unit", FoodController.getAllUnits);
 
 export default router;

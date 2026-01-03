@@ -13,4 +13,52 @@ export class FoodController {
             res.status(400).json({ code: error.message });
         }
     }
+
+    static async getFoodInGroup(req: any, res: Response) {
+        try {
+            const foods = await FoodService.getFoodInGroup(req.user.userId);
+            res.status(200).json(foods);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+
+    static async editFood(req: any, res: Response) {
+        try {
+            const { name, newCategory, newUnit } = req.body;
+            const file = req.image;
+            const food = await FoodService.editFood(req.user.userId, name, newCategory, newUnit, file);
+            res.status(200).json(food);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+
+    static async deleteFood(req: any, res: Response) {
+        try {
+            const { name } = req.body;
+            await FoodService.deleteFood(req.user.userId, name);
+            res.status(200).json({ message: "FOOD_DELETED" });
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+
+    static async getAllCategories(req: any, res: Response) {
+        try {
+            const categories = await FoodService.getAllCategories();
+            res.status(200).json(categories);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+
+    static async getAllUnits(req: any, res: Response) {
+        try {
+            const units = await FoodService.getAllUnits();
+            res.status(200).json(units);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
 }
