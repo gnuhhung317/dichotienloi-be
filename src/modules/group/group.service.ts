@@ -95,10 +95,19 @@ export class GroupService {
       throw new Error("USER_NOT_IN_GROUP");
     }
 
+    // Lấy thông tin group
+    const group = await GroupModel.findById(membership.groupId);
+
+    // Lấy members và populate user info
     const members = await GroupMemberModel.find({
       groupId: membership.groupId
-    }).sort({ joined_at: 1 });
+    })
+    .populate('userId', 'name email')
+    .sort({ joinedAt: 1 });
 
-    return members;
+    return {
+      group,
+      members
+    };
   }
 }

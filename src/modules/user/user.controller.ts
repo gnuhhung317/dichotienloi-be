@@ -16,6 +16,32 @@ export class UserController {
     res.json(user);
   }
 
+  // PUT /users/me - Update user profile
+  static async updateMe(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { name, email } = req.body;
+
+      const updateData: any = {};
+      if (name) updateData.name = name;
+      if (email) updateData.email = email;
+
+      const user = await UserModel.findByIdAndUpdate(
+        userId,
+        updateData,
+        { new: true }
+      ).select("-passwordHash");
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   // DELETE /users/:id
   static async deleteUser(req: Request, res: Response) {
     const { id } = req.params;

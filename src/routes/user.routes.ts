@@ -12,6 +12,12 @@ const router = Router();
 router.get("/me", authMiddleware, UserController.getMe);
 
 /**
+ * PUT /users/me
+ * Cập nhật thông tin user hiện tại (bắt buộc token)
+ */
+router.put("/me", authMiddleware, UserController.updateMe);
+
+/**
  * DELETE /users/:id
  * Chỉ admin mới được xóa user
  */

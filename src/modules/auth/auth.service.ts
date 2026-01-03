@@ -16,7 +16,28 @@ export class AuthService {
       name
     });
 
-    return user;
+    // Tự động tạo tokens sau khi register
+    const payload = { userId: user._id, role: user.role };
+    const accessToken = signAccessToken(payload);
+    const refreshToken = signRefreshToken(payload);
+
+    await RefreshTokenModel.create({
+      userId: user._id,
+      role: user.role,
+      token: refreshToken,
+      expiresAt: new Date(Date.now() + jwtConfig.refreshExpiresIn * 1000)
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role
+      }
+    };
   }
 
   static async login(email: string, password: string, device?: string) {
