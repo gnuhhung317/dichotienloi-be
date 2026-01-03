@@ -12,5 +12,6 @@ router.put("/", FoodController.editFood);
 router.delete("/", FoodController.deleteFood);
 router.get("/category", FoodController.getAllCategories);
 router.get("/unit", FoodController.getAllUnits);
+router.get("/log", FoodController.getFoodLogs);
 
 export default router;

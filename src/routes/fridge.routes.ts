@@ -9,6 +9,7 @@ router.use(authMiddleware);
 router.post("/", FridgeController.createFridgeItem);
 router.get("/", FridgeController.getFridgeItems);
 router.put("/", FridgeController.updateFridgeItem);
+router.patch("/", FridgeController.takeOutFridgeItem);
 router.delete("/", FridgeController.deleteFridgeItem);
 
 export default router;

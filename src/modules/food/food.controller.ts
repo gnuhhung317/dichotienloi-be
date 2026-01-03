@@ -62,4 +62,17 @@ export class FoodController {
             res.status(400).json({ code: error.message });
         }
     }
+
+    static async getFoodLogs(req: any, res: Response) {
+        try {
+            const foodLogs = await FoodService.getFoodLogsByGroup(req.user.userId);
+            const response = foodLogs.map(log => ({
+                ...log.toObject(),
+                quantity: Number(log.quantity.toString())
+            }));
+            res.status(200).json(response);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
 }

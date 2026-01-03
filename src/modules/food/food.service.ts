@@ -2,6 +2,7 @@ import { FoodModel } from "../../models/Food";
 import { GroupMemberModel } from "../../models/GroupMember";
 import { CategoryModel } from "../../models/Category";
 import { UnitModel } from "../../models/Unit";
+import { FoodLogModel } from "../../models/FoodLog";
 
 export class FoodService {
     static async createFood(userId: string, name: string, categoryName: string, unitName: string, file: any) {
@@ -106,5 +107,30 @@ export class FoodService {
 
     static async getAllUnits() {
         return UnitModel.find().sort({ name: 1 });
+    }
+
+    static async createFoodLog(foodId: string, action: string, quantity: number, groupId: string) {
+        return FoodLogModel.create({
+            foodId,
+            action,
+            quantity,
+            groupId
+        });
+    }
+    static async getFoodLogsByGroup(userId: string) {
+        const membership = await GroupMemberModel.findOne({ userId });
+        if (!membership) {
+            throw new Error("USER_NOT_IN_GROUP");
+        }
+        return FoodLogModel.find({ groupId: membership.groupId })
+            .populate({
+                path: 'foodId',
+                select: 'name',
+                populate: {
+                    path: 'unitId',
+                    select: 'name'
+                }
+            })
+            .sort({ createdAt: -1 });
     }
 }

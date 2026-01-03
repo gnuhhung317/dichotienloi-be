@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { FridgeItemModel } from "../../models/FridgeItem";
 import { GroupMemberModel } from "../../models/GroupMember";
 import { FoodModel } from "../../models/Food";
+import { FoodService } from "../food/food.service";
 
 export class FridgeService {
     static async createFridgeItem(userId: string, foodName: string, quantity: number, expiredAt: Date) {
@@ -93,6 +94,30 @@ export class FridgeService {
         if (!fridgeItem) {
             throw new Error("FRIDGE_ITEM_NOT_FOUND");
         }
+        return fridgeItem;
+    }
+
+    static async takeOutFridgeItem(userId: string, itemId: string, quantity: number, action: string) {
+        const membership = await GroupMemberModel.findOne({ userId });
+        if (!membership) {
+            throw new Error("USER_NOT_IN_GROUP");
+        }
+        const fridgeItem = await FridgeItemModel.findOne({ _id: itemId, groupId: membership.groupId });
+        if (!fridgeItem) {
+            throw new Error("FRIDGE_ITEM_NOT_FOUND");
+        }
+        const currentQuantity = parseFloat(fridgeItem.quantity.toString());
+        if (quantity <= 0 || quantity > currentQuantity) {
+            throw new Error("INVALID_QUANTITY");
+        }
+        const newQuantity = currentQuantity - quantity;
+        fridgeItem.quantity = mongoose.Types.Decimal128.fromString(newQuantity.toString());
+        if (newQuantity === 0) {
+            await fridgeItem.deleteOne();
+        } else {
+            await fridgeItem.save();
+        }
+        await FoodService.createFoodLog(fridgeItem.foodId, action, quantity, membership.groupId);
         return fridgeItem;
     }
 }

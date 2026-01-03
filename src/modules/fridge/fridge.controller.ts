@@ -100,4 +100,29 @@ export class FridgeController {
             res.status(400).json({ code: error.message });
         }
     }
+
+    static async takeOutFridgeItem(req: any, res: Response) {
+        try {
+            const { itemId, quantity, action } = req.body;
+            if(!itemId || quantity == null || !action) {
+                return res.status(400).json({
+                    code: 'MISSING_REQUIRED_FIELDS'
+                });
+            }
+            const updatedItem = await FridgeService.takeOutFridgeItem(
+                req.user.userId,
+                itemId,
+                Number(quantity),
+                action
+            );
+            const response = {
+                ...updatedItem.toObject(),
+                quantity: Number(updatedItem.quantity.toString())
+            };
+            return res.status(200).json(response);
+        }
+        catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
 }
