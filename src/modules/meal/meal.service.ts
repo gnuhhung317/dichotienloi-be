@@ -21,22 +21,25 @@ export class MealService {
         });
     }
 
-    static async getMealPlan(userId: string, date: Date, mealType?: string) {
+    static async getMealPlan(userId: string, startDate: Date, endDate: Date) {
         const membership = await GroupMemberModel.findOne({ userId });
         if (!membership) {
             throw new Error("USER_NOT_IN_GROUP");
         }
         const groupId = membership.groupId;
 
-        const query: any = { groupId, date };
-        if (mealType) {
-            query.mealType = mealType;
-        }
+        const query: any = {
+            groupId,
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        };
 
         return MealRecipeModel.find(query).populate({
             path: 'recipeId',
-            select: 'name'
-        });
+            select: 'name description image'
+        }); // Added description/image to select if available (schema check recommended)
     }
 
     static async removeRecipeFromMealPlan(userId: string, mealRecipeId: string) {
@@ -51,7 +54,7 @@ export class MealService {
             groupId
         });
 
-         if (!deleted) {
+        if (!deleted) {
             throw new Error("MEAL_RECIPE_NOT_FOUND");
         }
 

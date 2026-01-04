@@ -14,9 +14,13 @@ export class MealController {
     }
     static async getMealPlan(req: any, res: Response) {
         try {
-            const { date, mealType } = req.body;
+            const { startDate, endDate } = req.query;
             const userId = req.user.userId;
-            const mealPlan = await MealService.getMealPlan(userId, new Date(date), mealType);
+            const mealPlan = await MealService.getMealPlan(
+                userId,
+                new Date(startDate as string),
+                new Date(endDate as string)
+            );
             res.status(200).json(mealPlan);
         } catch (error: any) {
             res.status(400).json({ code: error.message });

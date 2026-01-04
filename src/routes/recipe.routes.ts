@@ -6,9 +6,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post("/", RecipeController.createRecipe);
+import { uploadMiddleware } from "../middlewares/upload.middleware";
+
+router.post("/", uploadMiddleware.single("image"), RecipeController.createRecipe);
 router.get("/", RecipeController.getRecipes);
-router.get("/id", RecipeController.getRecipeById);
+router.get("/:recipeId", RecipeController.getRecipeById);
 router.put("/", RecipeController.updateRecipe);
 router.delete("/", RecipeController.deleteRecipe);
 

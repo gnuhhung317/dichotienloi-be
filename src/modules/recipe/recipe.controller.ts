@@ -5,9 +5,21 @@ import { IngredientService } from "./ingredient.service";
 export class RecipeController {
     static async createRecipe(req: any, res: Response) {
         try {
-            const { name, description, groupOnly } = req.body;
+            const { name, description, groupOnly, ingredients } = req.body;
+            let parsedIngredients = ingredients;
+
+            // If ingredients is string (from FormData), parse it
+            if (typeof ingredients === 'string') {
+                try {
+                    parsedIngredients = JSON.parse(ingredients);
+                } catch (e) {
+                    parsedIngredients = [];
+                }
+            }
+
             const userId = req.user.userId;
-            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly);
+            const image = req.file ? req.file.filename : undefined;
+            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, parsedIngredients, image);
             res.status(201).json(recipe);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
@@ -16,7 +28,7 @@ export class RecipeController {
 
     static async getRecipes(req: any, res: Response) {
         try {
-            const { groupOnly } = req.body;
+            const groupOnly = req.query.groupOnly === 'true';
             const userId = req.user.userId;
             const recipes = await RecipeService.getRecipes(userId, groupOnly);
             res.status(200).json(recipes);
@@ -27,7 +39,7 @@ export class RecipeController {
 
     static async getRecipeById(req: any, res: Response) {
         try {
-            const { recipeId } = req.body;
+            const { recipeId } = req.params;
             const recipe = await RecipeService.getRecipeById(recipeId);
 
             const response = {
@@ -89,7 +101,6 @@ export class RecipeController {
 
     static async removeIngredient(req: any, res: Response) {
         try {
-            const { recipeId, foodId } = req.body;
             const userId = req.user.userId;
             const recipe = await IngredientService.removeIngredient(userId, recipeId, foodId);
             res.status(200).json(recipe);

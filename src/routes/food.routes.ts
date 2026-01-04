@@ -2,13 +2,15 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { FoodController } from "../modules/food/food.controller";
 
+import { uploadMiddleware } from "../middlewares/upload.middleware";
+
 const router = Router();
 
 router.use(authMiddleware);
 
-router.post("/", FoodController.createFood);
+router.post("/", uploadMiddleware.single("image"), FoodController.createFood);
 router.get("/", FoodController.getFoodInGroup);
-router.put("/", FoodController.editFood);
+router.put("/", uploadMiddleware.single("image"), FoodController.editFood);
 router.delete("/", FoodController.deleteFood);
 router.get("/category", FoodController.getAllCategories);
 router.get("/unit", FoodController.getAllUnits);

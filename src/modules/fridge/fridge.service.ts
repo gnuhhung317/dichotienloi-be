@@ -47,15 +47,15 @@ export class FridgeService {
         }
         return FridgeItemModel.find({ groupId: membership.groupId })
             .populate({
-            path: 'foodId',
-            select: 'name categoryId'
+                path: 'foodId',
+                select: 'name categoryId'
             })
             .populate({
-            path: 'unitId',
-            select: 'name'
+                path: 'unitId',
+                select: 'name'
             })
             .sort({ expiredAt: 1 });
-        
+
     }
 
     static async updateFridgeItem(userId: string, itemId: string, newQuantity: number, newExpiredAt: Date) {
