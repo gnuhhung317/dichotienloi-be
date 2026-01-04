@@ -1,12 +1,13 @@
 import { Router } from "express";
 import multer from "multer";
+import cloudinary from "../config/cloudinary";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { RecipeController } from "../modules/recipe/recipe.controller";
 
 const router = Router();
 
 const upload = multer({
-  dest: 'uploads/',
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -16,6 +17,29 @@ const upload = multer({
   },
   limits: { fileSize: 5 * 1024 * 1024 }
 });
+
+const uploadToCloudinary = async (req: any, res: any, next: any) => {
+  if (req.file) {
+    try {
+      const result = await cloudinary.uploader.upload_stream(
+        { folder: 'recipes' },
+        (error, result) => {
+          if (error) {
+            return next(error);
+          }
+          req.file.cloudinaryUrl = result?.secure_url;
+          req.file.publicId = result?.public_id;
+          next();
+        }
+      );
+      result.end(req.file.buffer);
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
+};
 
 router.use(authMiddleware);
 
@@ -82,7 +106,7 @@ router.use(authMiddleware);
  *                 code:
  *                   type: string
  */
-router.post("/", upload.single('image'), RecipeController.createRecipe);  // Thêm middleware upload.single('image')
+router.post("/", upload.single('image'), uploadToCloudinary, RecipeController.createRecipe);
 
 // ... (phần còn lại của file không thay đổi)
 

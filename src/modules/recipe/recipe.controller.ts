@@ -7,7 +7,7 @@ export class RecipeController {
         try {
             const { name, description, groupOnly } = req.body;
             const userId = req.user.userId;
-            const imagePath = req.file ? req.file.path : null;
+            const imagePath = req.file ? req.file.cloudinaryUrl : null;
             const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, imagePath);
             res.status(201).json(recipe);
         } catch (error: any) {
