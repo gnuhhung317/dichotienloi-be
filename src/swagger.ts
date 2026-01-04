@@ -10,7 +10,7 @@ export const swaggerOptions: Options = {
     },
     servers: [
       {
-        url: 'http://localhost:'+ (process.env.PORT || '4000'),
+        url: 'http://localhost:' + (process.env.PORT || '4000'),
       },
     ],
     components: {
@@ -21,8 +21,17 @@ export const swaggerOptions: Options = {
           bearerFormat: 'JWT',
         },
       },
+      schemas: {
+        ApiResponse: {
+          type: 'object',
+          properties: {
+            code: { type: 'string', example: '00047' },
+            message: { type: 'string', example: 'Thao tác thành công' },
+            data: { type: 'object', nullable: true }
+          }
+        }
+      }
     },
   },
-  // Đường dẫn đến các file chứa chú thích Swagger (JSDoc)
   apis: ['./src/routes/*.ts', './src/app.ts'],
 };

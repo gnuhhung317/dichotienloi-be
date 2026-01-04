@@ -6,13 +6,13 @@ import { UserController } from "../modules/user/user.controller";
 const router = Router();
 
 /**
- * GET /users/me
+ * GET /user/me
  * Lấy thông tin user hiện tại (bắt buộc token)
  */
 router.get("/me", authMiddleware, UserController.getMe);
 
 /**
- * PUT /users/me
+ * PUT /user/me
  * Cập nhật thông tin user hiện tại (bắt buộc token)
  */
 router.put("/me", authMiddleware, UserController.updateMe);
@@ -28,7 +28,7 @@ router.put("/me", authMiddleware, UserController.updateMe);
 //   UserController.deleteUser
 // );
 
-/** POST /users/group
+/** POST /user/group
  * Tạo nhóm người dùng mới (bắt buộc token)
  */
 router.post(
@@ -37,7 +37,7 @@ router.post(
   UserController.createGroup
 );
 
-/** POST /users/group/add
+/** POST /user/group/add
  * Thêm người dùng vào nhóm (bắt buộc token)
  */
 router.post(
@@ -46,7 +46,7 @@ router.post(
   UserController.addUserToGroup
 );
 
-/** DELETE /users/group
+/** DELETE /user/group
  * Xóa người dùng khỏi nhóm (bắt buộc token)
  */
 router.delete(
@@ -55,7 +55,7 @@ router.delete(
   UserController.deleteGroupMember
 );
 
-/** GET /users/group
+/** GET /user/group
  * Lấy danh sách thành viên trong nhóm của người dùng hiện tại (bắt buộc token)
  */
 router.get(

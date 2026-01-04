@@ -6,6 +6,7 @@ import routes from "./routes";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './swagger';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api", routes);
+app.use(errorMiddleware);
 
 // Swagger setup
 const specs = swaggerJsdoc(swaggerOptions);
