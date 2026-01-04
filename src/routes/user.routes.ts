@@ -287,11 +287,11 @@ router.post(
  *           schema:
  *             type: object
  *             required:
- *               - userId
+ *               - email
  *             properties:
- *               userId:
+ *               email:
  *                 type: string
- *                 description: ID của người dùng cần thêm
+ *                 description: Email của người dùng cần thêm
  *     responses:
  *       201:
  *         description: Thành viên đã thêm thành công
@@ -309,7 +309,7 @@ router.post(
  *       401:
  *         description: Chưa đăng nhập hoặc token không hợp lệ
  *       400:
- *         description: userId là bắt buộc
+ *         description: email là bắt buộc
  *         content:
  *           application/json:
  *             schema:
@@ -317,7 +317,7 @@ router.post(
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "userId is required"
+ *                   example: "email is required"
  *       403:
  *         description: Người yêu cầu không thuộc nhóm
  *         content:
