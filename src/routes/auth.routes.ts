@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../modules/auth/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { ro } from "@faker-js/faker/.";
 
 const router = Router();
 
@@ -29,9 +28,12 @@ const router = Router();
  *               password:
  *                 type: string
  *                 minLength: 6
+ *                 maxLength: 20
  *                 description: Mật khẩu
  *               name:
  *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
  *                 description: Tên người dùng
  *     responses:
  *       201:
@@ -58,8 +60,8 @@ const router = Router();
  *                       type: string
  *                     role:
  *                       type: string
- *       400:
- *         description: Dữ liệu không hợp lệ hoặc email đã tồn tại
+ *       409:
+ *         description: Email đã tồn tại
  *         content:
  *           application/json:
  *             schema:
@@ -67,7 +69,26 @@ const router = Router();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Email already exists hoặc Invalid email hoặc String must contain at least 6 character(s)"
+ *                   example: "Email already exists"
+ *       422:
+ *         description: Dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               emailError:
+ *                 value:
+ *                   message: "Nhập thiếu hoặc email không hợp lệ"
+ *               passwordError:
+ *                 value:
+ *                   message: "Mật khẩu phải có ít nhất 6 ký tự và tối đa 20 ký tự"
+ *               nameError:
+ *                 value:
+ *                   message: "Tên phải có ít nhất 3 ký tự và tối đa 30 ký tự"
  */
 router.post("/register", AuthController.register);
 
@@ -94,6 +115,7 @@ router.post("/register", AuthController.register);
  *               password:
  *                 type: string
  *                 minLength: 6
+ *                 maxLength: 20
  *                 description: Mật khẩu
  *     responses:
  *       200:
@@ -120,8 +142,8 @@ router.post("/register", AuthController.register);
  *                       type: string
  *                     role:
  *                       type: string
- *       400:
- *         description: Dữ liệu không hợp lệ hoặc thông tin đăng nhập sai
+ *       401:
+ *         description: Thông tin đăng nhập sai
  *         content:
  *           application/json:
  *             schema:
@@ -129,7 +151,23 @@ router.post("/register", AuthController.register);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Invalid credentials hoặc Invalid email hoặc String must contain at least 6 character(s)"
+ *                   example: "Invalid credentials"
+ *       422:
+ *         description: Dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               emailError:
+ *                 value:
+ *                   message: "Nhập thiếu hoặc email không hợp lệ"
+ *               passwordError:
+ *                 value:
+ *                   message: "Mật khẩu phải có ít nhất 6 ký tự và tối đa 20 ký tự"
  */
 router.post("/login", AuthController.login);
 
@@ -209,7 +247,13 @@ router.get("/user", authMiddleware, AuthController.me);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Refresh token revoked or expired hoặc jwt malformed"
+ *             examples:
+ *               revokedOrExpired:
+ *                 value:
+ *                   message: "Refresh token revoked or expired"
+ *               malformed:
+ *                 value:
+ *                   message: "jwt malformed"
  */
 router.post("/refresh", AuthController.refresh);
 
