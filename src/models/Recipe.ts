@@ -37,6 +37,11 @@ const recipeSchema = new Schema(
       ref: 'Group',
       default: null
     },
+
+    imagePath: {
+      type: String,
+      default: null
+    },
     
     ingredients: [
       {

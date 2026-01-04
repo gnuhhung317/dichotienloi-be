@@ -7,7 +7,8 @@ export class RecipeController {
         try {
             const { name, description, groupOnly } = req.body;
             const userId = req.user.userId;
-            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly);
+            const imagePath = req.file ? req.file.path : null;
+            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, imagePath);
             res.status(201).json(recipe);
         } catch (error: any) {
             res.status(400).json({ code: error.message });

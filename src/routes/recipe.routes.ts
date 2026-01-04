@@ -1,8 +1,21 @@
 import { Router } from "express";
+import multer from "multer";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { RecipeController } from "../modules/recipe/recipe.controller";
 
 const router = Router();
+
+const upload = multer({
+  dest: 'uploads/',
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 router.use(authMiddleware);
 
@@ -17,7 +30,7 @@ router.use(authMiddleware);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -32,6 +45,10 @@ router.use(authMiddleware);
  *               groupOnly:
  *                 type: boolean
  *                 description: Chỉ dành cho nhóm
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Ảnh của công thức (file upload)
  *     responses:
  *       201:
  *         description: Công thức đã tạo thành công
@@ -50,6 +67,9 @@ router.use(authMiddleware);
  *                   type: boolean
  *                 userId:
  *                   type: string
+ *                 image:
+ *                   type: string
+ *                   description: Đường dẫn ảnh (nếu có)
  *       401:
  *         description: Chưa đăng nhập
  *       400:
@@ -62,7 +82,9 @@ router.use(authMiddleware);
  *                 code:
  *                   type: string
  */
-router.post("/", RecipeController.createRecipe);
+router.post("/", upload.single('image'), RecipeController.createRecipe);  // Thêm middleware upload.single('image')
+
+// ... (phần còn lại của file không thay đổi)
 
 /**
  * @swagger
