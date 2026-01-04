@@ -45,7 +45,8 @@ export class AuthController {
 
   static async me(req: any, res: Response) {
     try {
-      res.json(req.user);
+      const user = await AuthService.getProfile(req.user.userId);
+      res.json(user);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
