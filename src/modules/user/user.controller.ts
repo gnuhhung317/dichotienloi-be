@@ -109,13 +109,18 @@ export class UserController {
   static async addUserToGroup(req: any, res: Response) {
     try {
       const ownerId = req.user.userId;
-      const { userId } = req.body;
+      const { email } = req.body;
 
-      if (!userId) {
-        return res.status(400).json({ message: "userId is required" });
+      if (!email) {
+        return res.status(400).json({ message: "email is required" });
       }
 
-      const member = await GroupService.addUserToGroup(ownerId, userId);
+      const userToAdd = await UserModel.findOne({ email });
+      if (!userToAdd) {
+        return res.status(404).json({ message: "User with this email not found" });
+      }
+
+      const member = await GroupService.addUserToGroup(ownerId, userToAdd._id.toString());
 
       res.status(201).json(member);
     } catch (err: any) {
