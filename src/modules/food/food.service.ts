@@ -30,6 +30,7 @@ export class FoodService {
             categoryId: category._id,
             unitId: unit._id,
             groupId: membership.groupId,
+            image: file ? file.filename : undefined
         });
     }
 
@@ -40,12 +41,12 @@ export class FoodService {
         }
         return FoodModel.find({ groupId: membership.groupId })
             .populate({
-            path: 'categoryId',
-            select: 'name'
+                path: 'categoryId',
+                select: 'name'
             })
             .populate({
-            path: 'unitId',
-            select: 'name'
+                path: 'unitId',
+                select: 'name'
             });
     }
 
@@ -79,6 +80,9 @@ export class FoodService {
 
         food.categoryId = category._id;
         food.unitId = unit._id;
+        if (file) {
+            food.image = file.filename;
+        }
         await food.save();
 
         return food;

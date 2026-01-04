@@ -30,6 +30,11 @@ const foodSchema = new Schema(
       type: String,
       ref: 'Group',
       required: true
+    },
+
+    image: {
+      type: String,
+      required: false
     }
   },
   {

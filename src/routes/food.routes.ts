@@ -2,6 +2,8 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { FoodController } from "../modules/food/food.controller";
 
+import { uploadMiddleware } from "../middlewares/upload.middleware";
+
 const router = Router();
 
 router.use(authMiddleware);
@@ -68,7 +70,7 @@ router.use(authMiddleware);
  *                 code:
  *                   type: string
  */
-router.post("/", FoodController.createFood);
+router.post("/", uploadMiddleware.single("image"), FoodController.createFood);
 
 /**
  * @swagger
@@ -111,112 +113,7 @@ router.post("/", FoodController.createFood);
  *                   type: string
  */
 router.get("/", FoodController.getFoodInGroup);
-
-/**
- * @swagger
- * /api/food/:
- *   put:
- *     summary: Chỉnh sửa thực phẩm
- *     tags: [Food]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tên thực phẩm hiện tại
- *               newCategory:
- *                 type: string
- *                 description: Tên danh mục mới
- *               newUnit:
- *                 type: string
- *                 description: Tên đơn vị mới
- *               image:
- *                 type: string
- *                 format: binary
- *                 description: Hình ảnh mới
- *     responses:
- *       200:
- *         description: Thực phẩm đã chỉnh sửa thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 foodCategoryName:
- *                   type: string
- *                 unitName:
- *                   type: string
- *                 imageUrl:
- *                   type: string
- *       401:
- *         description: Chưa đăng nhập
- *       400:
- *         description: Dữ liệu không hợp lệ
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 code:
- *                   type: string
- */
 router.put("/", FoodController.editFood);
-
-/**
- * @swagger
- * /api/food/:
- *   delete:
- *     summary: Xóa thực phẩm
- *     tags: [Food]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tên thực phẩm cần xóa
- *     responses:
- *       200:
- *         description: Thực phẩm đã xóa thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "FOOD_DELETED"
- *       401:
- *         description: Chưa đăng nhập
- *       400:
- *         description: Lỗi xử lý
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 code:
- *                   type: string
- */
 router.delete("/", FoodController.deleteFood);
 
 /**

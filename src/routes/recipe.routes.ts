@@ -43,6 +43,11 @@ const uploadToCloudinary = async (req: any, res: any, next: any) => {
 
 router.use(authMiddleware);
 
+import { uploadMiddleware } from "../middlewares/upload.middleware";
+
+router.post("/", uploadMiddleware.single("image"), RecipeController.createRecipe);
+router.get("/", RecipeController.getRecipes);
+router.get("/:recipeId", RecipeController.getRecipeById);
 /**
  * @swagger
  * /api/recipe/:
@@ -54,7 +59,7 @@ router.use(authMiddleware);
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             required:
@@ -69,10 +74,6 @@ router.use(authMiddleware);
  *               groupOnly:
  *                 type: boolean
  *                 description: Chỉ dành cho nhóm
- *               image:
- *                 type: string
- *                 format: binary
- *                 description: Ảnh của công thức (file upload)
  *     responses:
  *       201:
  *         description: Công thức đã tạo thành công
@@ -91,9 +92,6 @@ router.use(authMiddleware);
  *                   type: boolean
  *                 userId:
  *                   type: string
- *                 image:
- *                   type: string
- *                   description: Đường dẫn ảnh (nếu có)
  *       401:
  *         description: Chưa đăng nhập
  *       400:

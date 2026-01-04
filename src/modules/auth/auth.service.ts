@@ -65,7 +65,7 @@ export class AuthService {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name,
+        name: user.name || '',
         role: user.role
       }
     };
@@ -95,5 +95,17 @@ export class AuthService {
     });
 
     return { accessToken: newAccessToken };
+  }
+
+  static async getProfile(userId: string) {
+    const user = await UserModel.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    return {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    };
   }
 }

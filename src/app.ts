@@ -6,13 +6,16 @@ import routes from "./routes";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './swagger';
+import { loggingMiddleware } from './middlewares/logging.middleware';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(loggingMiddleware); // Logging middleware - tạm thời
 app.use("/api", routes);
+app.use("/uploads", express.static("uploads"));
 
 // Swagger setup
 const specs = swaggerJsdoc(swaggerOptions);
