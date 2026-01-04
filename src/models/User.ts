@@ -8,6 +8,10 @@ const userSchema = new Schema(
       default: uuidv4
     },
 
+    name: {
+      type: String
+    },
+
     email: {
       type: String,
       required: true,

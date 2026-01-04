@@ -7,6 +7,11 @@ const router = Router();
 
 router.use(authMiddleware, requireRole(["admin"]));
 
+router.post("/users", AdminController.createUser);
+router.get("/users", AdminController.getAllUsers);
+router.put("/users/:userId", AdminController.updateUser);
+router.delete("/users/:userId", AdminController.deleteUserById);
+
 router.post("/category", AdminController.createCategory);
 router.get("/category", AdminController.getCategory);
 router.put("/category", AdminController.editCategory);

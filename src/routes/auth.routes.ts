@@ -84,7 +84,7 @@ router.post("/login", AuthController.login);
 
 /**
  * @swagger
- * /api/auth/me:
+ * /api/auth/user:
  *   get:
  *     summary: Lấy thông tin người dùng hiện tại
  *     tags: [Auth]
@@ -96,7 +96,7 @@ router.post("/login", AuthController.login);
  *       401:
  *         description: Chưa đăng nhập
  */
-router.get("/me", authMiddleware, AuthController.me);
+router.get("/user", authMiddleware, AuthController.me);
 
 router.post("/refresh", AuthController.refresh);
 
