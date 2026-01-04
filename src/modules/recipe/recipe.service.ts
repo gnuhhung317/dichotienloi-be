@@ -2,7 +2,7 @@ import { RecipeModel } from '../../models/Recipe';
 import { GroupMemberModel } from '../../models/GroupMember';
 
 export class RecipeService {
-    static async createRecipe(userId: string, name: string, description: string, groupOnly: boolean, imagePath: string | null) {
+    static async createRecipe(userId: string, name: string, description: string, groupOnly: boolean) {
         let ownerType = groupOnly ? 'group' : 'global';
         let groupId = null;
         if(groupOnly) {
@@ -20,8 +20,7 @@ export class RecipeService {
             description,
             ownerType,
             ownerId: userId,
-            groupId,
-            imagePath
+            groupId
         });
     }
 
