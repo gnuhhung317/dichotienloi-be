@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../modules/auth/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { ro } from "@faker-js/faker/.";
 
 const router = Router();
 
@@ -29,15 +28,67 @@ const router = Router();
  *               password:
  *                 type: string
  *                 minLength: 6
+ *                 maxLength: 20
  *                 description: Mật khẩu
  *               name:
  *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
  *                 description: Tên người dùng
  *     responses:
  *       201:
  *         description: Đăng ký thành công
- *       400:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Access token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *       409:
+ *         description: Email đã tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Email already exists"
+ *       422:
  *         description: Dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               emailError:
+ *                 value:
+ *                   message: "Nhập thiếu hoặc email không hợp lệ"
+ *               passwordError:
+ *                 value:
+ *                   message: "Mật khẩu phải có ít nhất 6 ký tự và tối đa 20 ký tự"
+ *               nameError:
+ *                 value:
+ *                   message: "Tên phải có ít nhất 3 ký tự và tối đa 30 ký tự"
  */
 router.post("/register", AuthController.register);
 
@@ -64,6 +115,7 @@ router.post("/register", AuthController.register);
  *               password:
  *                 type: string
  *                 minLength: 6
+ *                 maxLength: 20
  *                 description: Mật khẩu
  *     responses:
  *       200:
@@ -73,18 +125,55 @@ router.post("/register", AuthController.register);
  *             schema:
  *               type: object
  *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Access token
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Refresh token
  *                 user:
  *                   type: object
- *                 token:
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *       401:
+ *         description: Thông tin đăng nhập sai
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
  *                   type: string
- *       400:
+ *                   example: "Invalid credentials"
+ *       422:
  *         description: Dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               emailError:
+ *                 value:
+ *                   message: "Nhập thiếu hoặc email không hợp lệ"
+ *               passwordError:
+ *                 value:
+ *                   message: "Mật khẩu phải có ít nhất 6 ký tự và tối đa 20 ký tự"
  */
 router.post("/login", AuthController.login);
 
 /**
  * @swagger
- * /api/auth/me:
+ * /api/auth/user:
  *   get:
  *     summary: Lấy thông tin người dùng hiện tại
  *     tags: [Auth]
@@ -93,11 +182,79 @@ router.post("/login", AuthController.login);
  *     responses:
  *       200:
  *         description: Thông tin người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 role:
+ *                   type: string
  *       401:
- *         description: Chưa đăng nhập
+ *         description: Chưa đăng nhập hoặc token không hợp lệ
+ *       400:
+ *         description: Lỗi xử lý dữ liệu
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
-router.get("/me", authMiddleware, AuthController.me);
+router.get("/user", authMiddleware, AuthController.me);
 
+/**
+ * @swagger
+ * /api/auth/refresh:
+ *   post:
+ *     summary: Làm mới access token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Refresh token để làm mới access token
+ *     responses:
+ *       200:
+ *         description: Làm mới thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Access token mới
+ *       400:
+ *         description: Refresh token không hợp lệ hoặc đã hết hạn
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               revokedOrExpired:
+ *                 value:
+ *                   message: "Refresh token revoked or expired"
+ *               malformed:
+ *                 value:
+ *                   message: "jwt malformed"
+ */
 router.post("/refresh", AuthController.refresh);
 
 /**
@@ -108,11 +265,40 @@ router.post("/refresh", AuthController.refresh);
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Refresh token để xóa
  *     responses:
  *       200:
  *         description: Đăng xuất thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Logout successful"
  *       401:
- *         description: Chưa đăng nhập
+ *         description: Chưa đăng nhập hoặc token không hợp lệ
+ *       400:
+ *         description: Refresh token không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
 router.post("/logout", authMiddleware, AuthController.logout);
 

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
-import { loginSchema, registerSchema } from "./auth.schema";
+import { loginSchema, registerSchema, handleZodError } from "./auth.schema";
+import { ZodError } from "zod";
 
 export class AuthController {
   static async register(req: Request, res: Response) {
@@ -14,6 +15,13 @@ export class AuthController {
 
       res.status(201).json(user);
     } catch (error: any) {
+      if (error instanceof ZodError) {
+        // Handle Zod validation errors
+        return res.status(422).json({ message: handleZodError(error) });
+      }
+      if (error.message === "Email already exists") {
+        return res.status(409).json({ message: error.message });
+      }
       res.status(400).json({ message: error.message });
     }
   }
@@ -24,6 +32,13 @@ export class AuthController {
       const result = await AuthService.login(data.email, data.password);
       res.json(result);
     } catch (error: any) {
+      if (error instanceof ZodError) {
+        // Handle Zod validation errors
+        return res.status(422).json({ message: handleZodError(error) });
+      }
+      if (error.message === "Invalid credentials") {
+        return res.status(401).json({ message: error.message });
+      }
       res.status(400).json({ message: error.message });
     }
   }

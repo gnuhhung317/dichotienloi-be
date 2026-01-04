@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { UserModel } from "../../models/User";
 import { GroupService } from "../group/group.service";
+import { comparePassword, hashPassword } from "../../utils/password";
 
 export class UserController {
-  // GET /users/me
+  // GET /user/
   static async getMe(req: any, res: Response) {
     const user = await UserModel.findById(req.user.userId).select(
       "-passwordHash"
@@ -16,7 +17,7 @@ export class UserController {
     res.json(user);
   }
 
-  // PUT /users/me - Update user profile
+  // PUT /user/ - Update user profile
   static async updateMe(req: any, res: Response) {
     try {
       const userId = req.user.userId;
@@ -42,16 +43,46 @@ export class UserController {
     }
   }
 
-  // DELETE /users/:id
-  static async deleteUser(req: Request, res: Response) {
-    const { id } = req.params;
+  // Change password
+  static async changePassword(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { oldPassword, newPassword } = req.body;
+      const user = await UserModel.findById(userId);
 
-    await UserModel.findByIdAndDelete(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-    res.json({ message: "User deleted successfully" });
+      const isMatch = await comparePassword(oldPassword, user.passwordHash);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+
+      await UserModel.findByIdAndUpdate(
+        userId,
+        { passwordHash: await hashPassword(newPassword) }
+      );
+
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
   }
 
-  // POST /users/group
+  // DELETE /user/
+  static async deleteMe(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      await UserModel.findByIdAndDelete(userId);
+
+      res.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  // POST /user/group
   static async createGroup(req: any, res: Response) {
     try {
       const userId = req.user.userId;
@@ -74,7 +105,7 @@ export class UserController {
     }
   }
 
-  // POST /users/group/add
+  // POST /user/group/add
   static async addUserToGroup(req: any, res: Response) {
     try {
       const ownerId = req.user.userId;
@@ -104,7 +135,7 @@ export class UserController {
     }
   }
 
-  // DELETE /users/group
+  // DELETE /user/group
   static async deleteGroupMember(req: any, res: Response) {
     try {
       const requesterId = req.user.userId;
@@ -122,7 +153,7 @@ export class UserController {
     }
   }
 
-  // GET /users/group
+  // GET /user/group
   static async getMyGroup(req: any, res: Response) {
     try {
       const userId = req.user.userId;

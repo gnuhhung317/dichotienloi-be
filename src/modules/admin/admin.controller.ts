@@ -2,6 +2,46 @@ import { Request, Response } from "express";
 import { AdminService } from "./admin.service";
 
 export class AdminController {
+  static async getAllUsers(req: Request, res: Response) {
+    try {
+      const users = await AdminService.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  static async deleteUserById(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      await AdminService.deleteUserById(userId);
+      res.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  static async createUser(req: Request, res: Response) {
+    try {
+      const { email, password, name, role } = req.body;
+      await AdminService.createUser(email, password, name, role);
+      res.json({ message: "User created successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  static async updateUser(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const updateData = req.body;
+      await AdminService.updateUser(userId, updateData);
+      res.json({ message: "User updated successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async createCategory(req: Request, res: Response) {
     try {
       const { name } = req.body;

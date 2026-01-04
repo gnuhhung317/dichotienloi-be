@@ -1,7 +1,46 @@
 import { CategoryModel } from "../../models/Category";
 import { UnitModel } from "../../models/Unit";
+import { UserModel } from "../../models/User";
+import { hashPassword } from "../../utils/password";
+import { registerSchema } from "../auth/auth.schema";
 
 export class AdminService {
+// Manage Users
+  static async getAllUsers() {
+    return UserModel.find().select("-passwordHash").sort({ createdAt: -1 });
+  }
+
+  static async deleteUserById(userId: string) {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      throw new Error("User not found!");
+    } 
+    await UserModel.findByIdAndDelete(userId);
+  }
+
+  static async createUser(email: string, password: string, name: string, role?: string) {
+    const exist = await UserModel.findOne({ email });
+    if (exist) throw new Error("Email already exists");
+
+    const user = await UserModel.create({
+      email,
+      passwordHash: await hashPassword(password),
+      name,
+      role: role || "user"
+    });
+  }
+
+  static async updateUser(userId: string, updateData: any) {
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true }
+    ).select("-passwordHash");
+    if (!user) {
+      throw new Error("User not found!");
+    }
+  }  
+
 // Category Management
 
   static async createCategory(name: string) {
