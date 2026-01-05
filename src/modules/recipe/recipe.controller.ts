@@ -121,4 +121,14 @@ export class RecipeController {
             res.status(400).json({ code: error.message });
         }
     }
+
+    static async suggestRecipes(req: any, res: Response) {
+        try {
+            const userId = req.user.userId;
+            const recipes = await RecipeService.suggestRecipes(userId);
+            res.status(200).json(recipes);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
 }

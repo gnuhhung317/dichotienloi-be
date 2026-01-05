@@ -14,6 +14,7 @@ router.use(authMiddleware);
 
 router.post("/", uploadMemory.single("image"), uploadToCloudinary('recipes'), RecipeController.createRecipe);
 router.get("/", RecipeController.getRecipes);
+router.get("/suggest", RecipeController.suggestRecipes);
 router.get("/:recipeId", RecipeController.getRecipeById);
 /**
  * @swagger

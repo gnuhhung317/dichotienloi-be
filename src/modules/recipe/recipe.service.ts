@@ -96,4 +96,72 @@ export class RecipeService {
         await RecipeModel.deleteOne({ _id: recipeId });
         return;
     }
+
+    static async suggestRecipes(userId: string) {
+        // 1. Get available food items from fridge
+        const membership = await GroupMemberModel.findOne({ userId });
+        if (!membership) {
+            throw new Error("USER_NOT_IN_GROUP");
+        }
+        const fridgeItems = await FridgeItemModel.find({ groupId: membership.groupId })
+            .select('foodId quantity unitId');
+
+        const availableFoodIds = fridgeItems.map(item => item.foodId.toString());
+
+        if (availableFoodIds.length === 0) {
+            return [];
+        }
+
+        // 2. Find recipes that use these ingredients
+        // We want recipes where at least one ingredient matches
+        const recipes = await RecipeModel.find({
+            'ingredients.foodId': { $in: availableFoodIds },
+            $or: [
+                { ownerType: 'global' },
+                { ownerType: 'group', groupId: membership.groupId }
+            ]
+        })
+            .populate({
+                path: 'ingredients.foodId',
+                select: 'name image'
+            })
+            .populate({
+                path: 'ingredients.unitId',
+                select: 'name'
+            });
+
+        // 3. Score and Sort Recipes
+        const scoredRecipes = recipes.map(recipe => {
+            const recipeObj = recipe.toObject();
+            let matchCount = 0;
+            const missingIngredients: any[] = [];
+
+            recipeObj.ingredients.forEach((ing: any) => {
+                const isAvailable = availableFoodIds.includes(ing.foodId._id.toString());
+                if (isAvailable) {
+                    matchCount++;
+                    ing.isAvailable = true;
+                } else {
+                    missingIngredients.push(ing);
+                    ing.isAvailable = false;
+                }
+            });
+
+            const totalIngredients = recipeObj.ingredients.length;
+            const matchPercentage = totalIngredients > 0 ? (matchCount / totalIngredients) * 100 : 0;
+
+            return {
+                ...recipeObj,
+                matchCount,
+                totalIngredients,
+                matchPercentage,
+                missingIngredients
+            };
+        });
+
+        // Sort by match percentage (descending)
+        scoredRecipes.sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+        return scoredRecipes;
+    }
 }
