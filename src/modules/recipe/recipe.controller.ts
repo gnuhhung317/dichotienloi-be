@@ -29,8 +29,9 @@ export class RecipeController {
     static async getRecipes(req: any, res: Response) {
         try {
             const groupOnly = req.query.groupOnly === 'true';
+            const sortByAvailability = req.query.sortByAvailability === 'true';
             const userId = req.user.userId;
-            const recipes = await RecipeService.getRecipes(userId, groupOnly);
+            const recipes = await RecipeService.getRecipes(userId, groupOnly, sortByAvailability);
             res.status(200).json(recipes);
         } catch (error: any) {
             res.status(400).json({ code: error.message });

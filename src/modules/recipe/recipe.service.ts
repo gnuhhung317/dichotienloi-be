@@ -1,5 +1,6 @@
 import { RecipeModel } from '../../models/Recipe';
 import { GroupMemberModel } from '../../models/GroupMember';
+import { FridgeItemModel } from '../../models/FridgeItem';
 
 export class RecipeService {
     static async createRecipe(userId: string, name: string, description: string, groupOnly: boolean, ingredients: any[] = [], image?: string) {
@@ -32,17 +33,91 @@ export class RecipeService {
         });
     }
 
-    static async getRecipes(userId: string, groupOnly: boolean) {
+    static async getRecipes(userId: string, groupOnly: boolean, sortByAvailability: boolean = false) {
+        let recipes = [];
+        let groupId = null;
+
         if (groupOnly) {
             const membership = await GroupMemberModel.findOne({ userId });
             if (!membership) {
                 throw new Error("USER_NOT_IN_GROUP");
             }
-            const groupId = membership.groupId;
-            return RecipeModel.find({ ownerType: 'group', groupId });
+            groupId = membership.groupId;
+            recipes = await RecipeModel.find({ ownerType: 'group', groupId })
+                .populate({
+                    path: 'ingredients.foodId',
+                    select: 'name image'
+                })
+                .populate({
+                    path: 'ingredients.unitId',
+                    select: 'name'
+                });
         } else {
-            return RecipeModel.find({ ownerType: 'global' });
+            recipes = await RecipeModel.find({ ownerType: 'global' })
+                .populate({
+                    path: 'ingredients.foodId',
+                    select: 'name image'
+                })
+                .populate({
+                    path: 'ingredients.unitId',
+                    select: 'name'
+                });
         }
+
+        if (sortByAvailability) {
+            // Get available food items from fridge
+            // We need groupId even if groupOnly is false, to check THE USER'S fridge
+            if (!groupId) {
+                const membership = await GroupMemberModel.findOne({ userId });
+                if (membership) {
+                    groupId = membership.groupId;
+                }
+            }
+
+            if (groupId) {
+                const fridgeItems = await FridgeItemModel.find({ groupId })
+                    .select('foodId quantity unitId');
+                const availableFoodIds = fridgeItems.map(item => item.foodId.toString());
+
+                // Calculate match for each recipe
+                const scoredRecipes = recipes.map(recipe => {
+                    const recipeObj = recipe.toObject();
+                    let matchCount = 0;
+                    const missingIngredients: any[] = [];
+
+                    recipeObj.ingredients.forEach((ing: any) => {
+                        // Check if foodId exists (it might be populated or just id)
+                        const foodId = ing.foodId._id ? ing.foodId._id.toString() : ing.foodId.toString();
+                        const isAvailable = availableFoodIds.includes(foodId);
+
+                        if (isAvailable) {
+                            matchCount++;
+                            ing.isAvailable = true;
+                        } else {
+                            missingIngredients.push(ing);
+                            ing.isAvailable = false;
+                        }
+                    });
+
+                    const totalIngredients = recipeObj.ingredients.length;
+                    const matchPercentage = totalIngredients > 0 ? (matchCount / totalIngredients) * 100 : 0;
+
+                    return {
+                        ...recipeObj,
+                        matchCount,
+                        totalIngredients,
+                        matchPercentage,
+                        missingIngredients
+                    };
+                });
+
+                // Sort by match percentage (descending)
+                scoredRecipes.sort((a, b) => b.matchPercentage - a.matchPercentage);
+                return scoredRecipes;
+            }
+        }
+
+        return recipes;
     }
 
     static async getRecipeById(recipeId: string) {
