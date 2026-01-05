@@ -49,7 +49,7 @@ export class RecipeService {
         const recipe = await RecipeModel.findById(recipeId)
             .populate({
                 path: 'ingredients.foodId',
-                select: 'name'
+                select: 'name image'
             })
             .populate({
                 path: 'ingredients.unitId',

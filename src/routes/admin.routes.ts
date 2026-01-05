@@ -348,24 +348,19 @@ router.put("/category", AdminController.editCategory);
 
 /**
  * @swagger
- * /api/admin/category:
+ * /api/admin/category/{name}:
  *   delete:
  *     summary: Xóa danh mục (Admin)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tên danh mục cần xóa
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tên danh mục cần xóa
  *     responses:
  *       200:
  *         description: Danh mục đã xóa thành công
@@ -392,7 +387,7 @@ router.put("/category", AdminController.editCategory);
  *                   type: string
  *                   example: "NAME_REQUIRED"
  */
-router.delete("/category", AdminController.deleteCategory);
+router.delete("/category/:name", AdminController.deleteCategory);
 
 /**
  * @swagger
@@ -536,24 +531,19 @@ router.put("/unit", AdminController.editUnit);
 
 /**
  * @swagger
- * /api/admin/unit:
+ * /api/admin/unit/{unitName}:
  *   delete:
  *     summary: Xóa đơn vị (Admin)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - unitName
- *             properties:
- *               unitName:
- *                 type: string
- *                 description: Tên đơn vị cần xóa
+ *     parameters:
+ *       - in: path
+ *         name: unitName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tên đơn vị cần xóa
  *     responses:
  *       200:
  *         description: Đơn vị đã xóa thành công
@@ -580,6 +570,6 @@ router.put("/unit", AdminController.editUnit);
  *                   type: string
  *                   example: "NAME_REQUIRED"
  */
-router.delete("/unit", AdminController.deleteUnit);
+router.delete("/unit/:unitName", AdminController.deleteUnit);
 
 export default router;

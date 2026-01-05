@@ -85,7 +85,7 @@ export class AdminController {
 
   static async deleteCategory(req: Request, res: Response) {
     try {
-      const { name } = req.body;
+      const { name } = req.params;
 
       if (!name || !name.trim()) {
         return res.status(400).json({ message: "NAME_REQUIRED" });
@@ -141,7 +141,7 @@ export class AdminController {
 
   static async deleteUnit(req: Request, res: Response) {
     try {
-      const { unitName } = req.body;
+      const { unitName } = req.params;
 
       if (!unitName || !unitName.trim()) {
         return res.status(400).json({ message: "NAME_REQUIRED" });

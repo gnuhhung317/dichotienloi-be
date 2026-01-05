@@ -129,7 +129,7 @@ export class FoodService {
         return FoodLogModel.find({ groupId: membership.groupId })
             .populate({
                 path: 'foodId',
-                select: 'name',
+                select: 'name image',
                 populate: {
                     path: 'unitId',
                     select: 'name'
