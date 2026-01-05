@@ -7,6 +7,7 @@ import fridgeRoutes from "./fridge.routes";
 import recipeRoutes from "./recipe.routes";
 import shoppingRoutes from "./shopping.routes";
 import mealRoutes from "./meal.routes";
+import uploadRoutes from "./upload.routes";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/fridge", fridgeRoutes);
 router.use("/recipe", recipeRoutes);
 router.use("/shopping", shoppingRoutes);
 router.use("/meal", mealRoutes);
+router.use("/upload", uploadRoutes);
 
 export default router;
