@@ -106,6 +106,20 @@ router.get("/", ShoppingController.getShoppingItems);
 
 /**
  * @swagger
+ * /api/shopping/lists:
+ *   get:
+ *     summary: Lấy danh sách các ngày đi chợ
+ *     tags: [Shopping]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách các ngày đi chợ
+ * */
+router.get("/lists", ShoppingController.getShoppingLists);
+
+/**
+ * @swagger
  * /api/shopping/marker:
  *   put:
  *     summary: Đánh dấu item đã mua

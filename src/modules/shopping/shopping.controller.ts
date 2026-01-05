@@ -4,9 +4,9 @@ import { ShoppingService } from "./shopping.service";
 export class ShoppingController {
     static async addItemToShoppingList(req: any, res: Response) {
         try {
-            const { foodId, quantity } = req.body;
+            const { foodId, quantity, date, assignedTo } = req.body;
             const userId = req.user.userId;
-            const item = await ShoppingService.addItemToShoppingList(userId, foodId, quantity);
+            const item = await ShoppingService.addItemToShoppingList(userId, foodId, quantity, date, assignedTo);
             res.status(201).json(item);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
@@ -16,12 +16,23 @@ export class ShoppingController {
     static async getShoppingItems(req: any, res: Response) {
         try {
             const userId = req.user.userId;
-            const items = await ShoppingService.getShoppingItems(userId);
+            const { date } = req.query;
+            const items = await ShoppingService.getShoppingItems(userId, date as string);
             const response = items.map((item: any) => ({
                 ...item.toObject(),
                 quantity: Number(item.quantity.toString())
             }));
             res.status(200).json(response);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+
+    static async getShoppingLists(req: any, res: Response) {
+        try {
+            const userId = req.user.userId;
+            const lists = await ShoppingService.getShoppingLists(userId);
+            res.status(200).json(lists);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
         }
@@ -40,9 +51,9 @@ export class ShoppingController {
 
     static async updateItemQuantity(req: any, res: Response) {
         try {
-            const { itemId, newQuantity } = req.body;
+            const { itemId, newQuantity, assignedTo } = req.body;
             const userId = req.user.userId;
-            const item = await ShoppingService.updateItemQuantity(userId, itemId, newQuantity);
+            const item = await ShoppingService.updateItem(userId, itemId, newQuantity, assignedTo);
             res.status(200).json(item);
         } catch (error: any) {
             res.status(400).json({ code: error.message });

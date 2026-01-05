@@ -12,6 +12,10 @@ const userSchema = new Schema(
       type: String
     },
 
+    avatar: {
+      type: String
+    },
+
     email: {
       type: String,
       required: true,

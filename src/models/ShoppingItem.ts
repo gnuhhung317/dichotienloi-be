@@ -25,6 +25,12 @@ const shoppingItemSchema = new Schema(
       required: true
     },
 
+    shoppingListId: {
+      type: String,
+      ref: 'ShoppingList',
+      required: false // Optional for now to support legacy items or default list
+    },
+
     assignedTo: {
       type: String,
       ref: 'User',
@@ -42,6 +48,7 @@ const shoppingItemSchema = new Schema(
 );
 
 shoppingItemSchema.index({ groupId: 1 });
+shoppingItemSchema.index({ shoppingListId: 1 });
 shoppingItemSchema.index({ assignedTo: 1 });
 shoppingItemSchema.index({ is_bought: 1 });
 
