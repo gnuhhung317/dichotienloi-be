@@ -193,6 +193,45 @@ router.get("/id", RecipeController.getRecipeById);
 
 /**
  * @swagger
+ * /api/recipe/{recipeId}/clone:
+ *   post:
+ *     summary: Sao chép công thức (Import)
+ *     tags: [Recipe]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: recipeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của công thức cần sao chép
+ *     responses:
+ *       201:
+ *         description: Công thức đã sao chép thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       400:
+ *         description: Lỗi xử lý
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ */
+router.post("/:recipeId/clone", RecipeController.cloneRecipe);
+
+/**
+ * @swagger
  * /api/recipe/:
  *   put:
  *     summary: Cập nhật công thức

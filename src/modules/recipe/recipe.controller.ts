@@ -132,4 +132,15 @@ export class RecipeController {
             res.status(400).json({ code: error.message });
         }
     }
+
+    static async cloneRecipe(req: any, res: Response) {
+        try {
+            const { recipeId } = req.params;
+            const userId = req.user.userId;
+            const recipe = await RecipeService.cloneRecipe(userId, recipeId);
+            res.status(201).json(recipe);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
 }

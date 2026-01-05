@@ -172,7 +172,9 @@ export class RecipeService {
         return;
     }
 
+
     static async suggestRecipes(userId: string) {
+        // ... (existing implementation)
         // 1. Get available food items from fridge
         const membership = await GroupMemberModel.findOne({ userId });
         if (!membership) {
@@ -238,5 +240,35 @@ export class RecipeService {
         scoredRecipes.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
         return scoredRecipes;
+    }
+
+    static async cloneRecipe(userId: string, recipeId: string) {
+        // 1. Find the recipe
+        const originalRecipe = await RecipeModel.findById(recipeId);
+        if (!originalRecipe) {
+            throw new Error("RECIPE_NOT_FOUND");
+        }
+
+        // 2. Get user's group
+        const membership = await GroupMemberModel.findOne({ userId });
+        if (!membership) {
+            throw new Error("USER_NOT_IN_GROUP");
+        }
+
+        // 3. Check if already cloned? (Optional, maybe allow duplicates or check by name)
+        // Let's allow duplicates but maybe append (Copy) to name if needed.
+        // For simplicity, just clone it.
+
+        const newRecipe = await RecipeModel.create({
+            name: originalRecipe.name, // Keep name or add " (Clone)"? User can edit later.
+            description: originalRecipe.description,
+            ownerType: 'group',
+            ownerId: userId,
+            groupId: membership.groupId,
+            image: originalRecipe.image,
+            ingredients: originalRecipe.ingredients // Keep references to original foods/units
+        });
+
+        return newRecipe;
     }
 }
