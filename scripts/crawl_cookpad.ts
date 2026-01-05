@@ -38,11 +38,45 @@ const HEADERS = {
 };
 
 const TOPICS: Record<string, string[]> = {
-    'Món chính': ['thịt kho', 'cá kho tộ', 'sườn xào chua ngọt', 'gà chiên nước mắm', 'bò kho', 'đậu hũ nhồi thịt', 'thịt luộc cà pháo'],
-    'Canh - Soup': ['canh chua cá lóc', 'canh bí đỏ thịt bằm', 'soup cua', 'lẩu thái hải sản', 'canh rau ngót nấu tôm', 'canh bầu nấu tôm'],
-    'Ăn sáng': ['phở bò tái', 'bún bò huế', 'bánh mì ốp la', 'hủ tiếu nam vang', 'bún riêu cua', 'mì quảng', 'xôi mặn'],
-    'Ăn vặt': ['bánh tráng trộn', 'chè thái sầu riêng', 'trà sữa trân châu', 'ốc len xào dừa', 'khoai lang kén', 'chân gà sả tắc'],
-    'Salad - Gỏi': ['gỏi gà bắp cải', 'gỏi cuốn tôm thịt', 'salad nga', 'gỏi xoài tôm khô', 'nộm đu đủ bò khô']
+    'Món chính': [
+        // Heo
+        'thịt kho tàu', 'sườn xào chua ngọt', 'ba chỉ rang cháy cạnh', 'thịt luộc cà pháo', 'chả lá lốt', 'nem rán (chả giò)',
+        // Gà - Vịt
+        'gà chiên nước mắm', 'gà luộc lá chanh', 'gà kho gừng', 'vịt om sấu', 'cánh gà sốt me',
+        // Bò
+        'bò kho', 'bò lúc lắc', 'bò xào thiên lý', 'thịt bò xào hành tây',
+        // Hải sản & Cá
+        'cá kho tộ', 'cá chiên xù', 'tôm rim thịt', 'mực xào cần tỏi', 'cá diêu hồng hấp xì dầu', 'chả cá thác lác chiên',
+        // Khác
+        'đậu hũ nhồi thịt', 'trứng chiên hành', 'mắm chưng'
+    ],
+    'Canh - Soup': [
+        'canh chua cá lóc', 'canh bí đỏ thịt bằm', 'canh cua rau đay', 'canh sườn hầm rau củ',
+        'canh rau ngót nấu tôm', 'canh bầu nấu tôm', 'canh mướp đắng nhồi thịt', 'canh kim chi',
+        'canh khoai mỡ', 'canh ngao nấu chua', 'soup cua', 'soup gà nấm', 'lẩu thái hải sản'
+    ],
+    'Ăn sáng': [
+        'phở bò tái', 'phở gà', 'bún bò huế', 'bánh mì ốp la', 'bánh mì chảo',
+        'hủ tiếu nam vang', 'bún riêu cua', 'mì quảng', 'xôi mặn', 'xôi xéo',
+        'bánh cuốn nóng', 'cơm tấm sườn bì chả', 'bún chả', 'bánh canh cua', 'cháo lòng'
+    ],
+    'Ăn vặt': [
+        'bánh tráng trộn', 'bánh tráng nướng', 'ốc len xào dừa', 'khoai lang kén',
+        'chân gà sả tắc', 'cút lộn xào me', 'nem chua rán', 'bắp xào tôm bơ',
+        'khoai tây chiên', 'bò bía', 'gỏi cuốn tôm thịt', 'tô trái cây', 'bánh flan'
+    ],
+    'Salad - Gỏi': [
+        'gỏi gà bắp cải', 'gỏi ngó sen tôm thịt', 'salad nga', 'gỏi xoài tôm khô',
+        'nộm đu đủ bò khô', 'salad dầu giấm trứng', 'gỏi tai heo', 'nộm sứa', 'gỏi bưởi tôm thịt'
+    ],
+    'Món Chay': [ // Danh mục mới
+        'đậu hũ sốt cà chua', 'nấm kho tiêu', 'rau củ luộc kho quẹt chay', 'canh chua chay',
+        'mì xào rau nấm', 'đậu que xào tỏi', 'nem chay', 'cà tím kho tộ'
+    ],
+    'Tráng miệng': [ // Danh mục mới
+        'chè thái sầu riêng', 'chè bưởi', 'sữa chua nếp cẩm', 'tàu hũ nước đường',
+        'trà sữa trân châu', 'kem chuối', 'rau câu dừa', 'sinh tố bơ'
+    ]
 };
 
 

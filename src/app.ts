@@ -41,10 +41,13 @@ app.get('/', (_req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
+import { initScheduler } from './utils/scheduler';
+
 app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
   try {
     await connectMongo();
+    initScheduler();
   } catch (err) {
     console.error('MongoDB connection failed', err);
   }

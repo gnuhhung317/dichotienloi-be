@@ -8,6 +8,8 @@ import recipeRoutes from "./recipe.routes";
 import shoppingRoutes from "./shopping.routes";
 import mealRoutes from "./meal.routes";
 import uploadRoutes from "./upload.routes";
+import notificationRoutes from "./notification.routes";
+import reportRoutes from "./report.routes";
 
 const router = Router();
 
@@ -20,5 +22,8 @@ router.use("/recipe", recipeRoutes);
 router.use("/shopping", shoppingRoutes);
 router.use("/meal", mealRoutes);
 router.use("/upload", uploadRoutes);
+router.use("/notification", notificationRoutes);
+router.use("/report", reportRoutes);
+
 
 export default router;

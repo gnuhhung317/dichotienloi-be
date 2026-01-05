@@ -3,6 +3,8 @@ import { FridgeItemModel } from "../../models/FridgeItem";
 import { GroupMemberModel } from "../../models/GroupMember";
 import { FoodModel } from "../../models/Food";
 import { FoodService } from "../food/food.service";
+import { ExpiryNotificationModel } from "../../models/ExpiryNotification";
+
 
 export class FridgeService {
     static async createFridgeItem(userId: string, foodName: string, quantity: number, expiredAt: Date) {
@@ -30,7 +32,7 @@ export class FridgeService {
         }
 
         const status = expiredAtDate.getTime() < Date.now() ? "expired" : "available";
-        return FridgeItemModel.create({
+        const fridgeItem = await FridgeItemModel.create({
             groupId: membership.groupId,
             foodId: food._id,
             unitId: food.unitId,
@@ -38,6 +40,18 @@ export class FridgeService {
             expiredAt,
             status
         });
+
+        // Create expiry notification
+        const notifyAt = new Date(expiredAt);
+        notifyAt.setDate(notifyAt.getDate() - 2); // Notify 2 days before
+
+        await ExpiryNotificationModel.create({
+            fridgeItemId: fridgeItem._id,
+            notifyAt: notifyAt,
+            status: 'pending'
+        });
+
+        return fridgeItem;
     }
 
     static async getFridgeItemsByGroup(userId: string) {
@@ -80,6 +94,20 @@ export class FridgeService {
             }
             fridgeItem.expiredAt = expiredAtDate;
             fridgeItem.status = expiredAtDate.getTime() < Date.now() ? "expired" : "available";
+
+            // Update expiry notification
+            const notifyAt = new Date(newExpiredAt);
+            notifyAt.setDate(notifyAt.getDate() - 2);
+
+            await ExpiryNotificationModel.findOneAndUpdate(
+                { fridgeItemId: fridgeItem._id },
+                {
+                    notifyAt: notifyAt,
+                    status: 'pending',
+                    sentAt: null
+                },
+                { upsert: true, new: true }
+            );
         }
         await fridgeItem.save();
         return fridgeItem;
@@ -94,6 +122,9 @@ export class FridgeService {
         if (!fridgeItem) {
             throw new Error("FRIDGE_ITEM_NOT_FOUND");
         }
+        // Delete notification
+        await ExpiryNotificationModel.deleteOne({ fridgeItemId: itemId });
+
         return fridgeItem;
     }
 
@@ -114,6 +145,7 @@ export class FridgeService {
         fridgeItem.quantity = mongoose.Types.Decimal128.fromString(newQuantity.toString());
         if (newQuantity === 0) {
             await fridgeItem.deleteOne();
+            await ExpiryNotificationModel.deleteOne({ fridgeItemId: itemId });
         } else {
             await fridgeItem.save();
         }

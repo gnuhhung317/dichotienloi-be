@@ -1,6 +1,11 @@
 import { ShoppingItemModel } from "../../models/ShoppingItem";
 import { ShoppingListModel } from "../../models/ShoppingList";
 import { GroupMemberModel } from "../../models/GroupMember";
+import { NotificationModel } from "../../models/Notification";
+import { FoodModel } from "../../models/Food";
+import { FoodService } from "../food/food.service";
+
+
 
 export class ShoppingService {
     static async getGroup(userId: string) {
@@ -67,13 +72,25 @@ export class ShoppingService {
             }
         }
 
-        return ShoppingItemModel.create({
+        const shoppingItem = await ShoppingItemModel.create({
             groupId,
             foodId,
             quantity,
             shoppingListId,
             assignedTo
         });
+
+        if (assignedTo && assignedTo !== userId) {
+            const food = await FoodModel.findById(foodId);
+            await NotificationModel.create({
+                type: 'system',
+                content: `Bạn được giao việc mua món ${food?.name || 'Unknown'}`,
+                userId: assignedTo,
+                is_read: false
+            });
+        }
+
+        return shoppingItem;
     }
 
     static async getShoppingItems(userId: string, dateStr?: string) {
@@ -113,7 +130,16 @@ export class ShoppingService {
             throw new Error("ITEM_NOT_FOUND");
         }
         item.is_bought = isBought;
-        return item.save();
+        await item.save();
+
+        if (isBought) {
+            // Log the purchase
+            // Be careful to convert Decimal128 to number for the log
+            const quantity = parseFloat(item.quantity.toString());
+            await FoodService.createFoodLog(item.foodId, 'buy', quantity, groupId);
+        }
+
+        return item;
     }
 
     static async updateItem(userId: string, itemId: string, quantity?: number, assignedTo?: string) {
@@ -133,6 +159,16 @@ export class ShoppingService {
             if (assignedTo) {
                 const member = await GroupMemberModel.findOne({ groupId, userId: assignedTo });
                 if (!member) throw new Error("ASSIGNED_USER_NOT_IN_GROUP");
+            }
+            // Check if assignment changed
+            if (assignedTo && assignedTo !== item.assignedTo && assignedTo !== userId) {
+                const food = await FoodModel.findById(item.foodId);
+                await NotificationModel.create({
+                    type: 'system',
+                    content: `Bạn được giao việc mua món ${food?.name || 'Unknown'}`,
+                    userId: assignedTo,
+                    is_read: false
+                });
             }
             item.assignedTo = assignedTo;
         }

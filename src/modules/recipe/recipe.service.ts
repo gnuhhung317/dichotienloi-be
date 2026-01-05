@@ -255,12 +255,21 @@ export class RecipeService {
             throw new Error("USER_NOT_IN_GROUP");
         }
 
-        // 3. Check if already cloned? (Optional, maybe allow duplicates or check by name)
-        // Let's allow duplicates but maybe append (Copy) to name if needed.
-        // For simplicity, just clone it.
+        // 3. Check if already cloned (by name)
+        const paramName = originalRecipe.name;
+        // Check if there is already a recipe with this name in this group
+        const existingRecipe = await RecipeModel.findOne({
+            groupId: membership.groupId,
+            name: paramName,
+            ownerType: 'group'
+        });
+
+        if (existingRecipe) {
+            throw new Error("RECIPE_ALREADY_EXISTS");
+        }
 
         const newRecipe = await RecipeModel.create({
-            name: originalRecipe.name, // Keep name or add " (Clone)"? User can edit later.
+            name: originalRecipe.name,
             description: originalRecipe.description,
             ownerType: 'group',
             ownerId: userId,
