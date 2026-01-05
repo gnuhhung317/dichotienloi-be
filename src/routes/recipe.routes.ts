@@ -130,69 +130,6 @@ router.get("/", RecipeController.getRecipes);
 
 /**
  * @swagger
- * /api/recipe/id:
- *   get:
- *     summary: Lấy công thức theo ID
- *     tags: [Recipe]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - recipeId
- *             properties:
- *               recipeId:
- *                 type: string
- *                 description: ID của công thức
- *     responses:
- *       200:
- *         description: Chi tiết công thức
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 description:
- *                   type: string
- *                 groupOnly:
- *                   type: boolean
- *                 userId:
- *                   type: string
- *                 ingredients:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       _id:
- *                         type: string
- *                       foodId:
- *                         type: string
- *                       quantity:
- *                         type: number
- *       401:
- *         description: Chưa đăng nhập
- *       400:
- *         description: Dữ liệu không hợp lệ
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 code:
- *                   type: string
- */
-router.get("/id", RecipeController.getRecipeById);
-
-/**
- * @swagger
  * /api/recipe/{recipeId}/clone:
  *   post:
  *     summary: Sao chép công thức (Import)
