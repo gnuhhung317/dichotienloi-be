@@ -23,6 +23,11 @@ export class UserController {
       const userId = req.user.userId;
       const { name, email } = req.body;
 
+      // Ensure name is set when updating user profile
+      if (!name) {
+        return res.status(400).json({ message: "Name is required" });
+      }
+
       const updateData: any = {};
       if (name) updateData.name = name;
       if (email) updateData.email = email;

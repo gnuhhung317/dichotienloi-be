@@ -5,7 +5,7 @@ import { UnitModel } from "../../models/Unit";
 import { FoodLogModel } from "../../models/FoodLog";
 
 export class FoodService {
-    static async createFood(userId: string, name: string, categoryName: string, unitName: string, file: any) {
+    static async createFood(userId: string, name: string, categoryName: string, unitName: string, imageUrl?: string) {
         const membership = await GroupMemberModel.findOne({ userId });
         if (!membership) {
             throw new Error("USER_NOT_IN_GROUP");
@@ -30,7 +30,7 @@ export class FoodService {
             categoryId: category._id,
             unitId: unit._id,
             groupId: membership.groupId,
-            image: file ? file.filename : undefined
+            image: imageUrl
         });
     }
 
@@ -50,7 +50,7 @@ export class FoodService {
             });
     }
 
-    static async editFood(userId: string, name: string, newCategory: string, newUnit: string, file: any) {
+    static async editFood(userId: string, name: string, newCategory: string, newUnit: string, imageUrl?: string) {
         const membership = await GroupMemberModel.findOne({ userId });
         if (!membership) {
             throw new Error("USER_NOT_IN_GROUP");
@@ -80,8 +80,8 @@ export class FoodService {
 
         food.categoryId = category._id;
         food.unitId = unit._id;
-        if (file) {
-            food.image = file.filename;
+        if (imageUrl) {
+            food.image = imageUrl;
         }
         await food.save();
 

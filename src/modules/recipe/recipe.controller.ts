@@ -19,7 +19,7 @@ export class RecipeController {
 
             const userId = req.user.userId;
             const imagePath = req.file ? req.file.cloudinaryUrl : null;
-            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, imagePath);
+            const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, parsedIngredients, imagePath);
             res.status(201).json(recipe);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
@@ -57,9 +57,21 @@ export class RecipeController {
 
     static async updateRecipe(req: any, res: Response) {
         try {
-            const { recipeId, newName, newDescription } = req.body;
+            const { recipeId, name, description, ingredients } = req.body;
+            let parsedIngredients = ingredients;
+
+            if (typeof ingredients === 'string') {
+                try {
+                    parsedIngredients = JSON.parse(ingredients);
+                } catch (e) {
+                    parsedIngredients = undefined; // If undefined, service might skip updating it
+                }
+            }
+
             const userId = req.user.userId;
-            const recipe = await RecipeService.updateRecipe(userId, recipeId, newName, newDescription);
+            const imagePath = req.file ? req.file.cloudinaryUrl : undefined;
+
+            const recipe = await RecipeService.updateRecipe(userId, recipeId, name, description, parsedIngredients, imagePath);
             res.status(200).json(recipe);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
@@ -101,6 +113,7 @@ export class RecipeController {
 
     static async removeIngredient(req: any, res: Response) {
         try {
+            const { recipeId, foodId } = req.body;
             const userId = req.user.userId;
             const recipe = await IngredientService.removeIngredient(userId, recipeId, foodId);
             res.status(200).json(recipe);

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { FoodController } from "../modules/food/food.controller";
 
-import { uploadMiddleware } from "../middlewares/upload.middleware";
+import { uploadMemory, uploadToCloudinary } from "../middlewares/cloudinary.middleware";
 
 const router = Router();
 
@@ -70,7 +70,7 @@ router.use(authMiddleware);
  *                 code:
  *                   type: string
  */
-router.post("/", uploadMiddleware.single("image"), FoodController.createFood);
+router.post("/", uploadMemory.single("image"), uploadToCloudinary('foods'), FoodController.createFood);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.post("/", uploadMiddleware.single("image"), FoodController.createFood);
  *                   type: string
  */
 router.get("/", FoodController.getFoodInGroup);
-router.put("/", FoodController.editFood);
+router.put("/", uploadMemory.single("image"), uploadToCloudinary('foods'), FoodController.editFood);
 router.delete("/", FoodController.deleteFood);
 
 /**

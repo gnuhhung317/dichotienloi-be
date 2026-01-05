@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-const BASE_URL = 'http://localhost:4000/api';
+const BASE_URL = 'http://54.251.156.243/api';
 let TOKEN = '';
 let USER_ID = '';
 

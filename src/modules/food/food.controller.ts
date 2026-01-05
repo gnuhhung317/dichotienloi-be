@@ -7,7 +7,9 @@ export class FoodController {
             const { name, foodCategoryName, unitName } = req.body;
             const file = req.file;
 
-            const food = await FoodService.createFood(req.user.userId, name, foodCategoryName, unitName, file);
+            const imageUrl = req.file ? req.file.cloudinaryUrl : undefined;
+
+            const food = await FoodService.createFood(req.user.userId, name, foodCategoryName, unitName, imageUrl);
             res.status(201).json(food);
         } catch (error: any) {
             console.log(error.stack);
@@ -27,8 +29,8 @@ export class FoodController {
     static async editFood(req: any, res: Response) {
         try {
             const { name, newCategory, newUnit } = req.body;
-            const file = req.file;
-            const food = await FoodService.editFood(req.user.userId, name, newCategory, newUnit, file);
+            const imageUrl = req.file ? req.file.cloudinaryUrl : undefined;
+            const food = await FoodService.editFood(req.user.userId, name, newCategory, newUnit, imageUrl);
             res.status(200).json(food);
         } catch (error: any) {
             res.status(400).json({ code: error.message });

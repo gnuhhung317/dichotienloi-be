@@ -61,7 +61,7 @@ export class RecipeService {
         return recipe;
     }
 
-    static async updateRecipe(userId: string, recipeId: string, newName: string, newDescription: string) {
+    static async updateRecipe(userId: string, recipeId: string, name?: string, description?: string, ingredients?: any[], imageUrl?: string) {
         const recipe = await RecipeModel.findById(recipeId);
         if (!recipe) {
             throw new Error("RECIPE_NOT_FOUND");
@@ -69,11 +69,17 @@ export class RecipeService {
         if (recipe.ownerId.toString() !== userId) {
             throw new Error("NOT_AUTHORIZED");
         }
-        if (newName) {
-            recipe.name = newName;
+        if (name) {
+            recipe.name = name;
         }
-        if (newDescription) {
-            recipe.description = newDescription;
+        if (description) {
+            recipe.description = description;
+        }
+        if (ingredients) {
+            recipe.ingredients = ingredients;
+        }
+        if (imageUrl) {
+            recipe.image = imageUrl;
         }
         await recipe.save();
         return recipe;
