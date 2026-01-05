@@ -48,7 +48,7 @@ export class FridgeService {
         return FridgeItemModel.find({ groupId: membership.groupId })
             .populate({
                 path: 'foodId',
-                select: 'name categoryId'
+                select: 'name categoryId image'
             })
             .populate({
                 path: 'unitId',

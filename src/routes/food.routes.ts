@@ -115,6 +115,7 @@ router.post("/", uploadMemory.single("image"), uploadToCloudinary('foods'), Food
 router.get("/", FoodController.getFoodInGroup);
 router.put("/", uploadMemory.single("image"), uploadToCloudinary('foods'), FoodController.editFood);
 router.delete("/", FoodController.deleteFood);
+router.patch("/:id/image", uploadMemory.single("image"), uploadToCloudinary('foods'), FoodController.updateFoodImage);
 
 /**
  * @swagger

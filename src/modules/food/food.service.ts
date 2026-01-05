@@ -137,4 +137,22 @@ export class FoodService {
             })
             .sort({ createdAt: -1 });
     }
+    static async updateFoodImage(userId: string, foodId: string, imageUrl: string) {
+        const membership = await GroupMemberModel.findOne({ userId });
+        if (!membership) {
+            throw new Error("USER_NOT_IN_GROUP");
+        }
+
+        const food = await FoodModel.findOne({
+            _id: foodId,
+            groupId: membership.groupId
+        });
+        if (!food) {
+            throw new Error("FOOD_NOT_FOUND");
+        }
+
+        food.image = imageUrl;
+        await food.save();
+        return food;
+    }
 }

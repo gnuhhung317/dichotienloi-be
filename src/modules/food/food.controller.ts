@@ -5,11 +5,9 @@ export class FoodController {
     static async createFood(req: any, res: Response) {
         try {
             const { name, foodCategoryName, unitName } = req.body;
-            console.log('FoodController.createFood body:', req.body);
             const file = req.file;
 
             const imageUrl = req.file ? req.file.cloudinaryUrl : req.body.image;
-            console.log('FoodController.createFood imageUrl:', imageUrl);
 
             const food = await FoodService.createFood(req.user.userId, name, foodCategoryName, unitName, imageUrl);
             res.status(201).json(food);
@@ -75,6 +73,21 @@ export class FoodController {
                 quantity: Number(log.quantity.toString())
             }));
             res.status(200).json(response);
+        } catch (error: any) {
+            res.status(400).json({ code: error.message });
+        }
+    }
+    static async updateFoodImage(req: any, res: Response) {
+        try {
+            const { id } = req.params;
+            const imageUrl = req.file ? req.file.cloudinaryUrl : req.body.image;
+
+            if (!imageUrl) {
+                return res.status(400).json({ code: "IMAGE_REQUIRED" });
+            }
+
+            const food = await FoodService.updateFoodImage(req.user.userId, id, imageUrl);
+            res.status(200).json(food);
         } catch (error: any) {
             res.status(400).json({ code: error.message });
         }
