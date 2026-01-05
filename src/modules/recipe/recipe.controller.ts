@@ -18,7 +18,7 @@ export class RecipeController {
             }
 
             const userId = req.user.userId;
-            const imagePath = req.file ? req.file.cloudinaryUrl : null;
+            const imagePath = req.file ? req.file.cloudinaryUrl : req.body.image || null;
             const recipe = await RecipeService.createRecipe(userId, name, description, groupOnly, parsedIngredients, imagePath);
             res.status(201).json(recipe);
         } catch (error: any) {
@@ -70,7 +70,7 @@ export class RecipeController {
             }
 
             const userId = req.user.userId;
-            const imagePath = req.file ? req.file.cloudinaryUrl : undefined;
+            const imagePath = req.file ? req.file.cloudinaryUrl : req.body.image;
 
             const recipe = await RecipeService.updateRecipe(userId, recipeId, name, description, parsedIngredients, imagePath);
             res.status(200).json(recipe);

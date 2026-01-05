@@ -5,9 +5,11 @@ export class FoodController {
     static async createFood(req: any, res: Response) {
         try {
             const { name, foodCategoryName, unitName } = req.body;
+            console.log('FoodController.createFood body:', req.body);
             const file = req.file;
 
-            const imageUrl = req.file ? req.file.cloudinaryUrl : undefined;
+            const imageUrl = req.file ? req.file.cloudinaryUrl : req.body.image;
+            console.log('FoodController.createFood imageUrl:', imageUrl);
 
             const food = await FoodService.createFood(req.user.userId, name, foodCategoryName, unitName, imageUrl);
             res.status(201).json(food);
@@ -29,7 +31,7 @@ export class FoodController {
     static async editFood(req: any, res: Response) {
         try {
             const { name, newCategory, newUnit } = req.body;
-            const imageUrl = req.file ? req.file.cloudinaryUrl : undefined;
+            const imageUrl = req.file ? req.file.cloudinaryUrl : req.body.image;
             const food = await FoodService.editFood(req.user.userId, name, newCategory, newUnit, imageUrl);
             res.status(200).json(food);
         } catch (error: any) {
