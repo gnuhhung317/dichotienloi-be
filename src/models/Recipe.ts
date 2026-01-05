@@ -37,7 +37,12 @@ const recipeSchema = new Schema(
       ref: 'Group',
       default: null
     },
-    
+
+    image: {
+      type: String,
+      default: null
+    },
+
     ingredients: [
       {
         foodId: { type: String, ref: 'Food', required: true },
@@ -60,4 +65,4 @@ recipeSchema.index({ ownerId: 1 });
 recipeSchema.index({ ownerType: 1, ownerId: 1 });
 
 export const RecipeModel =
-  mongoose.models.Recipe ||mongoose.model('Recipe', recipeSchema);
+  mongoose.models.Recipe || mongoose.model('Recipe', recipeSchema);
