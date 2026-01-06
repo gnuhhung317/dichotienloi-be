@@ -1,20 +1,34 @@
 import { CategoryModel } from "../../models/Category";
 import { UnitModel } from "../../models/Unit";
 import { UserModel } from "../../models/User";
+import { FoodLogModel } from "../../models/FoodLog"; // Imported FoodLogModel
 import { hashPassword } from "../../utils/password";
 import { registerSchema } from "../auth/auth.schema";
 
 export class AdminService {
-// Manage Users
+  // Manage Users
   static async getAllUsers() {
     return UserModel.find().select("-passwordHash").sort({ createdAt: -1 });
+  }
+
+  static async getAllFoodLogs() {
+    return FoodLogModel.find()
+      .populate({
+        path: 'foodId',
+        select: 'name image',
+        populate: {
+          path: 'unitId',
+          select: 'name'
+        }
+      })
+      .sort({ createdAt: -1 });
   }
 
   static async deleteUserById(userId: string) {
     const user = await UserModel.findById(userId);
     if (!user) {
       throw new Error("User not found!");
-    } 
+    }
     await UserModel.findByIdAndDelete(userId);
   }
 
@@ -39,9 +53,9 @@ export class AdminService {
     if (!user) {
       throw new Error("User not found!");
     }
-  }  
+  }
 
-// Category Management
+  // Category Management
 
   static async createCategory(name: string) {
     const existing = await CategoryModel.findOne({
@@ -109,7 +123,7 @@ export class AdminService {
     });
   }
 
-// Unit Management
+  // Unit Management
   static async createUnit(unitName: string) {
     const existing = await UnitModel.findOne({
       name: unitName.trim()

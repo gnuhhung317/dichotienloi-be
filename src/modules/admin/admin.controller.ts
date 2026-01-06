@@ -11,6 +11,19 @@ export class AdminController {
     }
   }
 
+  static async getAllFoodLogs(req: Request, res: Response) {
+    try {
+      const logs = await AdminService.getAllFoodLogs();
+      const response = logs.map(log => ({
+        ...log.toObject(),
+        quantity: Number(log.quantity.toString())
+      }));
+      res.json(response);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async deleteUserById(req: Request, res: Response) {
     try {
       const { userId } = req.params;

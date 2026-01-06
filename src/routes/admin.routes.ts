@@ -572,4 +572,49 @@ router.put("/unit", AdminController.editUnit);
  */
 router.delete("/unit/:unitName", AdminController.deleteUnit);
 
+/**
+ * @swagger
+ * /api/admin/food/log:
+ *   get:
+ *     summary: Lấy nhật ký thực phẩm toàn hệ thống (Admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách nhật ký thực phẩm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   foodName:
+ *                     type: string
+ *                   quantity:
+ *                     type: number
+ *                   action:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Chưa đăng nhập
+ *       403:
+ *         description: Không có quyền admin
+ *       400:
+ *         description: Lỗi xử lý
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.get("/food/log", AdminController.getAllFoodLogs);
+
 export default router;
